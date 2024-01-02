@@ -11,8 +11,9 @@ Core Course from account jak and inoo, class attendance. Export four times; 1x c
 ## How to Use:
 
 1. Copy all attendance files into directory data/{month}/raw.
-2. Set the configuration on config.py.
-3. Run main.ipynb. This will output two files: raw data per attendance and raw data per session.
+2. Complete the coco trainer data for that month.
+3. Set the configuration on config.py.
+4. Run main.ipynb. This will output two files: raw data per attendance and raw data per session.
 
 ## Usage:
 
