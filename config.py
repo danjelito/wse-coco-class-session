@@ -1,10 +1,10 @@
 from pathlib import Path
 
 # ! path for raw attendance data
-path = Path("data/11 nov 2023")
+path = Path("data/12 dec 2023")
 
 # ! specify to obtain current month data only
-month = 11
+month = 12
 
 # ! specify df_teacher sheet name
 df_teacher_sheet_name = str(path.stem)

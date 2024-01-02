@@ -735,6 +735,7 @@ shared_acc_et_map = {
     "fita": "Saputri Okfitasari Hana",
     "jack jonees": "Jones Jack William Isaac",
     "rozak": "Rozak Abdul Rahman",
+    "putri": "Khalisa Fairuz Putri",
 }
 
 
