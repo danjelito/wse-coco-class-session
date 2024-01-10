@@ -13,7 +13,7 @@ has_headers = True  # data has 2 header rows (data from coco)
 
 is_mutiple_files = True  # multiple files or one file
 
-# map centre here
+# map centers
 # ! update if there are new centers
 jkt_1 = ["PP", "SDC", "KG"]
 jkt_2 = ["GC", "LW", "BSD", "TBS"]
