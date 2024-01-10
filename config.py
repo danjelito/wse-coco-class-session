@@ -21,3 +21,10 @@ jkt_3 = ["KK", "CBB", "SMB"]
 bdg = ["DG"]
 sby = ["PKW"]
 centers = jkt_1 + jkt_2 + jkt_3 + bdg + sby
+map_centers = {
+    "JKT 1": jkt_1,
+    "JKT 2": jkt_2,
+    "JKT 3": jkt_3,
+    "BDG": bdg,
+    "SBY": sby,
+}
