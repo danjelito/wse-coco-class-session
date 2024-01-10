@@ -1,26 +1,14 @@
-import os
-
 import numpy as np
 import pandas as pd
-from dotenv import load_dotenv
 
 import config
 
 
-def configure():
-    """
-    Load secret env variable
-    in this case, the path to trainer data
-    """
-    load_dotenv()
-
-
 # configuration
-configure()  # load secret env variable
 is_utc = config.is_utc
 df_teacher_sheet_name = config.df_trainer_sheet_name
 month = config.month
-path_trainer_data = os.getenv("path_trainer_data")
+path_trainer_data = config.path_trainer_data
 
 
 map_col = {
