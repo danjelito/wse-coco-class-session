@@ -2,11 +2,11 @@
 
 ## Data Source:
 
-Core Course from account jak and inoo, class attendance. Export four times; 1x center class and 1x center students for each account.
+Core Course from account jak and inoo, class attendance. Export four times; 1 center class and 1 center students for each account.
 
 ## External Dependency:
 
-1. Coco trainer data: consists of teacher data which includes center and working days. Each month, tell TO to fill in the working days of each ET then copy it into local file on input/coco_trainer_data.xlsx.
+1. Coco trainer data: consists of teacher data which includes center and working days. Each month, tell TO to fill in the working days of each ET then copy it into local file.
 
 ## How to Use:
 
@@ -14,7 +14,8 @@ Core Course from account jak and inoo, class attendance. Export four times; 1x c
 2. Copy all attendance files into directory data/{month}/raw.
 3. Complete the coco trainer data for that month.
 4. Set the configuration on config.py.
-5. Run main.ipynb. This will output two files: raw data per attendance and raw data per session.
+5. IMPORTANT: Create a .env file specifying the absolute path to path_trainer_data file on your local computer.
+6. Run main.ipynb. This will output two files: raw data per attendance and raw data per session.
 
 ## Usage:
 

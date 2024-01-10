@@ -1,24 +1,27 @@
-from pathlib import Path
+import os
 
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 
 import config
 
+
+def configure():
+    """
+    Load secret env variable
+    in this case, the path to trainer data
+    """
+    load_dotenv()
+
+
 # configuration
+configure()  # load secret env variable
 is_utc = config.is_utc
-df_teacher_sheet_name = config.df_teacher_sheet_name
+df_teacher_sheet_name = config.df_trainer_sheet_name
 month = config.month
+path_trainer_data = os.getenv("path_trainer_data")
 
-# map centre here
-# note: update if there are new centers
-jkt_1 = ["PP", "SDC", "KG"]
-jkt_2 = ["GC", "LW", "BSD", "TBS"]
-jkt_3 = ["KK", "CBB", "SMB"]
-bdg = ["DG"]
-sby = ["PKW"]
-
-centers = jkt_1 + jkt_2 + jkt_3 + bdg + sby
 
 map_col = {
     "Student": "Student Name",
@@ -139,26 +142,6 @@ def clean_teacher_name(df: pd.DataFrame):
     return teachers
 
 
-def create_day_name_col(df, column):
-    return df[column].dt.strftime("%a")
-
-
-def create_day_col(df, column):
-    return df[column].dt.day
-
-
-def create_month_col(df, column):
-    return df[column].dt.month
-
-
-def create_month_name_col(df, column):
-    return df[column].dt.strftime("%m / %b")
-
-
-def create_year_col(df, column):
-    return df[column].dt.year
-
-
 def create_class_mode(df: pd.DataFrame):
     """
         Create class mode either offline or online.
@@ -275,9 +258,8 @@ def load_df_teacher(df_teacher_sheet_name: str = df_teacher_sheet_name):
     Returns:
         pd.DataFrame
     """
-    path = "input/coco_trainer_data.xlsx"
     df_teacher = pd.read_excel(
-        io=path,
+        io=path_trainer_data,
         sheet_name=df_teacher_sheet_name,
         usecols=["teacher", "teacher_center", "teacher_area", "teacher_position"],
     )
@@ -349,7 +331,7 @@ def create_class_location_2(df: pd.DataFrame):
     """
 
     class_locations = np.where(
-        (df["class_mode"] == "Offline") & ~(df["class_location"].isin(centers)),
+        (df["class_mode"] == "Offline") & ~(df["class_location"].isin(config.centers)),
         df["teacher_center"],
         df["class_location"],
     )
@@ -428,11 +410,11 @@ def create_class_location_area(df: pd.DataFrame):
 
     class_location_area = np.select(
         condlist=[
-            df["class_location"].isin(jkt_1),
-            df["class_location"].isin(jkt_2),
-            df["class_location"].isin(jkt_3),
-            df["class_location"].isin(bdg),
-            df["class_location"].isin(sby),
+            df["class_location"].isin(config.jkt_1),
+            df["class_location"].isin(config.jkt_2),
+            df["class_location"].isin(config.jkt_3),
+            df["class_location"].isin(config.bdg),
+            df["class_location"].isin(config.sby),
             df["class_location"] == "Online",
         ],
         choicelist=["JKT 1", "JKT 2", "JKT 3", "BDG", "SBY", "Online"],

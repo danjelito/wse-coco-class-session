@@ -1,19 +1,23 @@
 from pathlib import Path
 
-# ! path for raw attendance data
-path = Path("data/12 dec 2023")
 
-# ! specify to obtain current month data only
-month = 12
+path_raw_data = Path("data/12 dec 2023/raw")  # raw attendance data
 
-# ! specify df_teacher sheet name
-df_teacher_sheet_name = str(path.stem)
+month = 12  # specify to obtain current month data only
 
-# specify if date is in utc (data from ken)
-is_utc = False
+df_trainer_sheet_name = "12 dec 2023"  # sheet name in trainer data
 
-# specify if the data has 2 headers (data from coco)
-has_headers = True
+is_utc = False  # specify if date is in utc (data from ken)
 
-# multiple files from coco that need to be concatted
-is_mutiple_files = True
+has_headers = True  # data has 2 header rows (data from coco)
+
+is_mutiple_files = True  # multiple files or one file
+
+# map centre here
+# ! update if there are new centers
+jkt_1 = ["PP", "SDC", "KG"]
+jkt_2 = ["GC", "LW", "BSD", "TBS"]
+jkt_3 = ["KK", "CBB", "SMB"]
+bdg = ["DG"]
+sby = ["PKW"]
+centers = jkt_1 + jkt_2 + jkt_3 + bdg + sby
