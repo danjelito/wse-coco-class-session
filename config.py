@@ -9,7 +9,6 @@ path_raw_data = Path("input/12 dec 2023")  # raw attendance data
 month = 12  # specify to obtain current month data only
 df_trainer_sheet_name = "12 dec 2023"  # sheet name in trainer data
 is_utc = False  # specify if date is in utc (data from ken)
-has_headers = True  # data has 2 header rows (data from coco)
 is_mutiple_files = True  # multiple files or one file
 path_trainer_data = os.getenv("path_trainer_data")  # path for trainer data
 
