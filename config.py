@@ -5,7 +5,7 @@ import os
 
 load_dotenv()  # load secret env variable for trainer data
 
-path_raw_data = Path("data/12 dec 2023/raw")  # raw attendance data
+path_raw_data = Path("input/12 dec 2023")  # raw attendance data
 month = 12  # specify to obtain current month data only
 df_trainer_sheet_name = "12 dec 2023"  # sheet name in trainer data
 is_utc = False  # specify if date is in utc (data from ken)
