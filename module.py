@@ -706,6 +706,10 @@ shared_acc_et_map = {
     "jack jonees": "Jones Jack William Isaac",
     "rozak": "Rozak Abdul Rahman",
     "putri": "Khalisa Fairuz Putri",
+    # added in jan 2024
+    "okfita": "Saputri Okfitasari Hana",
+    "gitasya": "Murti Gitasya",
+    "peter": "Mowatt Peter Denis",
 }
 
 

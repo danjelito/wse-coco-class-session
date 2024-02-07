@@ -11,7 +11,7 @@ Core Course from account jak and inoo, class attendance. Export four times; 1 ce
 ## How to Use:
 
 1. Download attendance files.
-2. Copy all attendance files into directory input/{month}.
+2. Copy all attendance files into directory input/{year}/{month}.
 3. Complete the coco trainer data for that month.
 4. Set the configuration on config.py.
 5. IMPORTANT: Create a .env file specifying the absolute path to path_trainer_data file on your local computer.
