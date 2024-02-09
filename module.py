@@ -145,12 +145,13 @@ def create_class_mode(df: pd.DataFrame):
     conditions = [
         # GOC
         df["student_center"] == "Global Online Center",
+        df["teacher_center"] == "International",
         # if class name container "online" then online class
         df["class_type"].str.lower().str.contains("online", regex=False, na=False),
         # else, offline class
         True,
     ]
-    choices = ["GOC", "Online", "Offline"]
+    choices = ["GOC", "GOC", "Online", "Offline"]
 
     classes = np.select(conditions, choices, default="Error")
     return classes
