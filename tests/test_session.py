@@ -61,3 +61,11 @@ def test_class_type_grouped_all_filled(df_session):
     """
     na_class_type = df_session.loc[df_session["class_type_grouped"].isna()]
     assert not na_class_type.shape[0], f"some class type grouped is na: {na_class_type}"
+
+
+def test_no_enc_in_class_type_grouped(df_session):
+    """
+    There should not be encounter in class type grouped.
+    """
+    num = df_session.loc[df_session["class_type_grouped"] =="Encounter"].shape[0]
+    assert not num, "There are encounter in class_type_grouped"

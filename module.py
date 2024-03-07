@@ -200,13 +200,19 @@ def create_student_membership(df: pd.DataFrame):
     mask_deluxe_1 = (~name_contains_go) & membership_contains_std
     mask_deluxe_2 = (~name_contains_go) & name_contains_dlx
 
+    # mar 2024
+    # there is one vip members who are incorrectly assigned into deluxe
+    name_dekki = df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False)
+    code_8184 = df["student_code"].str.contains("8184", regex=False, na=False)
+
     conditions = [
+        (name_dekki & code_8184), 
         name_contains_go,  # if name contains go then go member
         mask_deluxe_1,  # if name not contain go and membership contains dlx then dlx
         mask_deluxe_2,  # if name not contain go and name contains dlx then dlx
         membership_contains_vip,  # if membership contains VIP
     ]
-    choices = ["GO", "Deluxe", "Deluxe", "VIP"]
+    choices = ["VIP", "GO", "Deluxe", "Deluxe", "VIP"]
     memberships = np.select(conditions, choices, default="Error")
 
     return memberships
