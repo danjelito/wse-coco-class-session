@@ -83,7 +83,7 @@ def test_shared_account_et_is_mapped(df_att_raw):
         if et not in map_et_shared:
             print(et)
             unmapped.append(et)
-    assert len(unmapped) == 0, "Some ET in shared accouns are unmapped."
+    assert len(unmapped) == 0, f"Some ET in shared accouns are unmapped: {unmapped}."
 
 
 def test_shared_account_class_is_mapped(df_att_clean):

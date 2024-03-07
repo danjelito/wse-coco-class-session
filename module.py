@@ -250,7 +250,7 @@ def load_df_teacher(df_teacher_sheet_name: str = df_teacher_sheet_name):
     df_teacher = pd.read_excel(
         io=path_trainer_data,
         sheet_name=df_teacher_sheet_name,
-        usecols=["teacher", "teacher_center", "teacher_area", "teacher_position"],
+        usecols=["coco_teacher_name", "teacher_center", "teacher_area", "teacher_position"],
     )
     return df_teacher
 
@@ -673,7 +673,7 @@ shared_acc_et_map = {
     "imel": "Basuki Imelda",
     "hary @pp imelda": "Basuki Imelda",
     "jack elfrink": "Francis Elfrink Jack",
-    "jack": "Francis Elfrink Jack",
+    "jack": "Jones Jack William Isaac",
     # added in aug 2023
     "grace": "Melody Grace",
     "grace pkw": "Melody Grace",
@@ -711,6 +711,10 @@ shared_acc_et_map = {
     "okfita": "Saputri Okfitasari Hana",
     "gitasya": "Murti Gitasya",
     "peter": "Mowatt Peter Denis",
+    # added in feb 2024
+    "comm team": "Community Team",
+    "garce": "Melody Grace",
+    "nita @ gc replacement": "Fairuz Muhammad",
 }
 
 
