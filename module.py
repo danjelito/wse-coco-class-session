@@ -721,6 +721,8 @@ shared_acc_et_map = {
     "comm team": "Community Team",
     "garce": "Melody Grace",
     "nita @ gc replacement": "Fairuz Muhammad",
+    # added in mar 2024
+    "lulu @dg": "Mustikawati Eka",
 }
 
 
