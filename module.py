@@ -58,7 +58,7 @@ def convert_to_gmt_plus_7(
     return dates
 
 
-def create_class_time(df: pd.DataFrame):
+def create_class_time(df: pd.DataFrame) -> pd.Series:
     """
         Create time column if not already available,
         then convert to %H:%M format,
@@ -68,7 +68,7 @@ def create_class_time(df: pd.DataFrame):
         df (pd.DataFrame)
 
     Returns:
-        pd.CategoricalDtype: Clean and formatted class time.
+        pd.Series: Clean and formatted class time.
     """
     hours = pd.date_range(
         start="2023-01-01", end="2023-01-02", freq="30 min", inclusive="left"
@@ -90,7 +90,7 @@ def create_class_time(df: pd.DataFrame):
     return class_time
 
 
-def clean_teacher_name(df: pd.DataFrame):
+def clean_teacher_name(df: pd.DataFrame) -> pd.Series:
     """
         Clean teacher name and remove duplicated name.
         # ! If duplicated, always choose the longest name.
@@ -131,7 +131,7 @@ def clean_teacher_name(df: pd.DataFrame):
     return teachers
 
 
-def create_class_mode(df: pd.DataFrame):
+def create_class_mode(df: pd.DataFrame) -> pd.Series:
     """
         Create class mode either offline or online.
         If class contains string 'online', then class_mode = 'Online'.
@@ -158,7 +158,7 @@ def create_class_mode(df: pd.DataFrame):
     return classes
 
 
-def create_attend(df: pd.DataFrame):
+def create_attend(df: pd.DataFrame) -> pd.Series:
     """
         Create attend / not attend col.
 
@@ -177,7 +177,7 @@ def create_attend(df: pd.DataFrame):
     return attendances
 
 
-def create_student_membership(df: pd.DataFrame):
+def create_student_membership(df: pd.DataFrame) -> pd.Series:
     """
         Create series marking student membership type.
         Standard Deluxe can join online and offline class.
@@ -203,9 +203,7 @@ def create_student_membership(df: pd.DataFrame):
 
     # mar 2024
     # there is one vip members who are incorrectly assigned into deluxe
-    name_dekki = (
-        df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False)
-    )
+    name_dekki = (df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False))
     code_8184 = df["student_code"].str.contains("8184", regex=False, na=False)
 
     conditions = [
@@ -221,7 +219,7 @@ def create_student_membership(df: pd.DataFrame):
     return memberships
 
 
-def create_duration(df: pd.DataFrame):
+def create_duration(df: pd.DataFrame) -> pd.Series:
     """
         DF from Ken does not contain duration.
         If there is no duration column, then infer that all classes is 1h.
@@ -246,7 +244,7 @@ def create_duration(df: pd.DataFrame):
     return durations
 
 
-def load_df_teacher(df_teacher_sheet_name: str = df_teacher_sheet_name):
+def load_df_teacher(df_teacher_sheet_name: str = df_teacher_sheet_name) -> pd.DataFrame:
     """
         Teacher df to get teacher center and area
 
@@ -269,7 +267,7 @@ def load_df_teacher(df_teacher_sheet_name: str = df_teacher_sheet_name):
     return df_teacher
 
 
-def create_class_location_1(df: pd.DataFrame):
+def create_class_location_1(df: pd.DataFrame) -> pd.Series:
     """create class location from description
 
     Args:
@@ -317,11 +315,12 @@ def create_class_location_1(df: pd.DataFrame):
         .replace("@", np.nan)[0]
         .str.replace("@", "")
         .str.upper()
+        .fillna("Online")
     )
     return class_locations
 
 
-def create_class_location_2(df: pd.DataFrame):
+def create_class_location_2(df: pd.DataFrame) -> pd.Series:
     """
         Create class location from teacher center
         provided that class is offline but class location is not in description.
@@ -341,7 +340,7 @@ def create_class_location_2(df: pd.DataFrame):
     return class_locations
 
 
-def create_class_location_3(df: pd.DataFrame, month=month):
+def create_class_location_3(df: pd.DataFrame, month=month) -> pd.Series:
     """create class location for moving ET.
     # ! Currently unused.
 
@@ -385,7 +384,7 @@ def create_class_location_3(df: pd.DataFrame, month=month):
     return class_locations
 
 
-def assert_class_location_online(df: pd.DataFrame):
+def assert_class_location_online(df: pd.DataFrame) -> pd.Series:
     """Assert that class_location for online class is 'Online'
 
     Args:
@@ -401,7 +400,7 @@ def assert_class_location_online(df: pd.DataFrame):
     return class_locations
 
 
-def create_class_location_area(df: pd.DataFrame):
+def create_class_location_area(df: pd.DataFrame) -> pd.Series:
     """Group class location per area
 
     Args:
@@ -426,7 +425,7 @@ def create_class_location_area(df: pd.DataFrame):
     return class_location_area
 
 
-def create_class_service(df: pd.DataFrame):
+def create_class_service(df: pd.DataFrame) -> pd.Series:
     """
         If class does not contain non-VIP, then it is a VIP class
         If class contains non-VIP and offline, then it is a deluxe class
@@ -469,7 +468,7 @@ def create_class_service(df: pd.DataFrame):
     return class_service
 
 
-def create_class_attendance(df: pd.DataFrame):
+def create_class_attendance(df: pd.DataFrame) -> pd.Series:
     """
         Count the number of students who attend.
 
@@ -489,7 +488,7 @@ def create_class_attendance(df: pd.DataFrame):
     return class_attendance
 
 
-def create_class_booking(df: pd.DataFrame):
+def create_class_booking(df: pd.DataFrame) -> pd.Series:
     """Count the number of members who booked the class.
 
     Args:
@@ -503,7 +502,7 @@ def create_class_booking(df: pd.DataFrame):
     return class_booking
 
 
-def create_class_status(df: pd.DataFrame):
+def create_class_status(df: pd.DataFrame) -> pd.Series:
     """
         If class attendance = 0, then class not given
 
@@ -517,7 +516,7 @@ def create_class_status(df: pd.DataFrame):
     return class_status
 
 
-def create_class_type_grouped(df: pd.DataFrame):
+def create_class_type_grouped(df: pd.DataFrame) -> pd.Series:
     """
         Convert class type for VIP members to VIP format.
         VIP should only have 2 types of classes: 1:1, VPG.
