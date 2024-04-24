@@ -9,6 +9,7 @@ is_utc = config.is_utc
 df_teacher_sheet_name = config.df_trainer_sheet_name
 month = config.month
 path_trainer_data = config.path_trainer_data
+center_map = config.CenterMap()  # initialize center map class
 
 
 map_col = {
@@ -202,11 +203,13 @@ def create_student_membership(df: pd.DataFrame):
 
     # mar 2024
     # there is one vip members who are incorrectly assigned into deluxe
-    name_dekki = df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False)
+    name_dekki = (
+        df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False)
+    )
     code_8184 = df["student_code"].str.contains("8184", regex=False, na=False)
 
     conditions = [
-        (name_dekki & code_8184), 
+        (name_dekki & code_8184),
         name_contains_go,  # if name contains go then go member
         mask_deluxe_1,  # if name not contain go and membership contains dlx then dlx
         mask_deluxe_2,  # if name not contain go and name contains dlx then dlx
@@ -256,7 +259,12 @@ def load_df_teacher(df_teacher_sheet_name: str = df_teacher_sheet_name):
     df_teacher = pd.read_excel(
         io=path_trainer_data,
         sheet_name=df_teacher_sheet_name,
-        usecols=["coco_teacher_name", "teacher_center", "teacher_area", "teacher_position"],
+        usecols=[
+            "coco_teacher_name",
+            "teacher_center",
+            "teacher_area",
+            "teacher_position",
+        ],
     )
     return df_teacher
 
@@ -326,7 +334,7 @@ def create_class_location_2(df: pd.DataFrame):
     """
 
     class_locations = np.where(
-        (df["class_mode"] == "Offline") & ~(df["class_location"].isin(config.centers)),
+        (df["class_mode"] == "Offline") & ~(df["class_location"].isin(center_map.get_center())),
         df["teacher_center"],
         df["class_location"],
     )
@@ -405,11 +413,11 @@ def create_class_location_area(df: pd.DataFrame):
 
     class_location_area = np.select(
         condlist=[
-            df["class_location"].isin(config.jkt_1),
-            df["class_location"].isin(config.jkt_2),
-            df["class_location"].isin(config.jkt_3),
-            df["class_location"].isin(config.bdg),
-            df["class_location"].isin(config.sby),
+            df["class_location"].isin(center_map.lookup_centers("JKT 1")),
+            df["class_location"].isin(center_map.lookup_centers("JKT 2")),
+            df["class_location"].isin(center_map.lookup_centers("JKT 3")),
+            df["class_location"].isin(center_map.lookup_centers("BDG")),
+            df["class_location"].isin(center_map.lookup_centers("SBY")),
             df["class_location"] == "Online",
         ],
         choicelist=["JKT 1", "JKT 2", "JKT 3", "BDG", "SBY", "Online"],
@@ -723,6 +731,7 @@ shared_acc_et_map = {
     "nita @ gc replacement": "Fairuz Muhammad",
     # added in mar 2024
     "lulu @dg": "Mustikawati Eka",
+    "alex r": "Roach Alex Scott",
 }
 
 

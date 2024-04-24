@@ -1,4 +1,7 @@
 import module
+import config
+
+center_map = config.CenterMap()  # initialize center map class
 
 
 def test_online_class_is_online_location(df_att_clean):
@@ -23,32 +26,34 @@ def test_class_with_online_name_is_online_location(df_att_clean):
     assert (df_att_clean.loc[filter_, "class_location"] != "Online").sum() == 0
 
 
-def test_class_center_match_with_class_area(df_att_clean, map_centers):
+def test_class_center_match_with_class_area(df_att_clean):
     """
     Class center should match with the correct area.
     """
 
-    for area, centers in map_centers.items():
-        assert (
-            df_att_clean.loc[
-                df_att_clean["class_location"].isin(centers), "class_area"
-            ].unique()
-            == area
-        ).all()
+    for center, area in center_map.get_center_area_map().items():
+        df = df_att_clean.loc[df_att_clean["class_location"] == center]
+        area_in_df = df["class_area"].unique()
+        # some old centers are gone, for example KG
+        if len(df) == 0:
+            continue
+        assert len(area_in_df) == 1, f"class location {center} has multiple areas: {area_in_df}"
+        assert area_in_df == area, f"class location {center} has wrong area in DF: {area_in_df})"
 
 
-def test_teacher_center_match_with_teacher_area(df_att_clean, map_centers):
+def test_teacher_center_match_with_teacher_area(df_att_clean):
     """
     Teacher center should match with the correct area.
     """
 
-    for area, centers in map_centers.items():
-        assert (
-            df_att_clean.loc[
-                df_att_clean["teacher_center"].isin(centers), "teacher_area"
-            ].unique()
-            == area
-        ).all()
+    for center, area in center_map.get_center_area_map().items():
+        df = df_att_clean.loc[df_att_clean["teacher_center"] == center]
+        area_in_df = df["teacher_area"].unique()
+        # some old centers are gone, for example KG
+        if len(df) == 0:
+            continue
+        assert len(area_in_df) == 1, f"teacher center {center} has multiple areas: {area_in_df}"
+        assert area_in_df == area, f"teacher center {center} has wrong area in DF: {area_in_df})"
 
 
 def test_no_class_time_is_missing(df_att_clean):
