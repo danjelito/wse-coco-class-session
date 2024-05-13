@@ -80,12 +80,16 @@ def test_shared_account_et_is_mapped(df_att_raw):
         .str[-1]
         .str.strip()
         .str.lower()
+        .fillna("Blank")
         .unique()
+        .tolist()
     )
     map_et_shared = module.shared_acc_et_map.keys()
     unmapped = []
     for et in list_et_shared:
-        if et not in map_et_shared:
+        if et == "Blank":
+            continue
+        elif et not in map_et_shared:
             print(et)
             unmapped.append(et)
     assert len(unmapped) == 0, f"Some ET in shared accouns are unmapped: {unmapped}."
@@ -148,9 +152,22 @@ def test_student_membership_is_mapped(df_att_clean):
     """
     There should only be three memberships.
     """
-
-    assert sorted(df_att_clean["student_membership"].unique()) == [
+    memberships = sorted(df_att_clean["student_membership"].unique())
+    assert memberships == [
         "Deluxe",
         "GO",
         "VIP",
-    ]
+    ], f"There are unknown membership: {memberships}"
+
+
+def test_one_code_is_one_name(df_clean, code_col, name_col):
+    """One code must have one name only."""
+
+    count_multiple = (df_clean
+        .groupby(code_col)    
+        .agg(count_student_name=(name_col, "nunique"))
+        .reset_index()
+        .loc[lambda df_: df_["count_student_name"] > 1, code_col]
+        .tolist()
+    )
+    assert not count_multiple, f"Some codes have multiple names: {count_multiple}"

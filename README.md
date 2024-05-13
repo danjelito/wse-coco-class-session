@@ -20,3 +20,7 @@ Core Course from account jak and inoo, class attendance. Export four times; 1 ce
 ## Usage:
 
 1. The output of this processor is used as raw data for experience management report.
+
+## TODO: 
+
+1. Check duplicated student name.

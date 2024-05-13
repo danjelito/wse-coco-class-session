@@ -1,3 +1,6 @@
+import config
+
+
 def test_online_class_in_online_location(df_session):
     """
     Class online should have class location online.
@@ -20,19 +23,23 @@ def test_booking_higher_than_eq_attendance(df_session):
 def test_vip_class_mapped(df_session):
     """
     VIP should have only one-on-one and VPG class.
+    In 2023-06 there are VIP members who joined GOC.
     """
 
-    vips = ["One-on-one", "Online One-on-one", "Online VPG", "VPG"]
-    assert (
-        sorted(
-            (
-                df_session.loc[
-                    df_session["class_service"] == "VIP", "class_type_grouped"
-                ]
-            ).unique()
-        )
-        == vips
+    if (
+        config.df_trainer_sheet_name == "2023-06"
+        # or config.df_trainer_sheet_name == "2023-10"
+    ):
+        vips = ["GOC", "One-on-one", "Online One-on-one", "Online VPG", "VPG"]
+    else:
+        vips = ["One-on-one", "Online One-on-one", "Online VPG", "VPG"]
+
+    classes = sorted(
+        (
+            df_session.loc[df_session["class_service"] == "VIP", "class_type_grouped"]
+        ).unique()
     )
+    assert classes == vips, f"There are unknown VIP classes: {classes}"
 
 
 def test_class_service_mapped(df_session):
@@ -67,5 +74,5 @@ def test_no_enc_in_class_type_grouped(df_session):
     """
     There should not be encounter in class type grouped.
     """
-    num = df_session.loc[df_session["class_type_grouped"] =="Encounter"].shape[0]
-    assert not num, "There are encounter in class_type_grouped"
+    num = df_session.loc[df_session["class_type_grouped"] == "Encounter"].shape[0]
+    assert num == 0, "There are encounter in class_type_grouped"

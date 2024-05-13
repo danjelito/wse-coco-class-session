@@ -34,6 +34,20 @@ map_col = {
     "Teacher": "Teacher",
 }
 
+def delete_unknown_shared_acc_teacher(df: pd.DataFrame) -> pd.DataFrame:
+    # there are blank teacher in shared account, because they are not specified in description
+    # so delete the attendance altogether because it is impossible to know who the trainer is
+    # except manually checking
+    contains_online = df["Teacher"].str.lower().str.contains("online")
+    lower_than_eq_20 = df["Teacher"].str.extract("(\d+)")[0].astype(float) <= 20
+    desc_blank = df["Description"].isna()
+    idxs = df.loc[
+        contains_online 
+        & lower_than_eq_20
+        & desc_blank
+    ].index
+    return df.drop(idxs, axis="index")
+
 
 def convert_to_gmt_plus_7(
     df: pd.DataFrame, column: str, is_utc: bool = is_utc
@@ -177,6 +191,11 @@ def create_attend(df: pd.DataFrame) -> pd.Series:
     return attendances
 
 
+def create_student_code(df: pd.DataFrame) -> pd.Series:
+    """Create student code from membership + code."""
+    return df["student_membership"] + " " + df["student_code"].astype(int).astype("str")
+
+
 def create_student_membership(df: pd.DataFrame) -> pd.Series:
     """
         Create series marking student membership type.
@@ -203,8 +222,10 @@ def create_student_membership(df: pd.DataFrame) -> pd.Series:
 
     # mar 2024
     # there is one vip members who are incorrectly assigned into deluxe
-    name_dekki = (df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False))
-    code_8184 = df["student_code"].str.contains("8184", regex=False, na=False)
+    name_dekki = (
+        df["student_name"].str.upper().str.contains("DEKKI", regex=False, na=False)
+    )
+    code_8184 = df["student_code"].astype(str).str.contains("8184", regex=False, na=False)
 
     conditions = [
         (name_dekki & code_8184),
@@ -333,7 +354,8 @@ def create_class_location_2(df: pd.DataFrame) -> pd.Series:
     """
 
     class_locations = np.where(
-        (df["class_mode"] == "Offline") & ~(df["class_location"].isin(center_map.get_center())),
+        (df["class_mode"] == "Offline")
+        & ~(df["class_location"].isin(center_map.get_center())),
         df["teacher_center"],
         df["class_location"],
     )
@@ -418,8 +440,9 @@ def create_class_location_area(df: pd.DataFrame) -> pd.Series:
             df["class_location"].isin(center_map.lookup_centers("BDG")),
             df["class_location"].isin(center_map.lookup_centers("SBY")),
             df["class_location"] == "Online",
+            df["class_location"] == "HO",
         ],
-        choicelist=["JKT 1", "JKT 2", "JKT 3", "BDG", "SBY", "Online"],
+        choicelist=["JKT 1", "JKT 2", "JKT 3", "BDG", "SBY", "Online", "HO"],
         default="Error",
     )
     return class_location_area
@@ -609,128 +632,122 @@ def create_class_type_grouped(df: pd.DataFrame) -> pd.Series:
 
 
 shared_acc_et_map = {
-    "uzli": "Ainiyah Uzlifatul",
+    'up "fame and fortune" (priscill)': "Priscilla Yokhebed",
+    "abi @pp replacement": "Gereau Jason Jarett",
+    "ade sapto": "Setiadi Sapto",
+    "ade": "Setiadi Sapto",
+    "adhit": "Reinindra Adhitya",
+    "adit comm team": "Reinindra Adhitya",
+    "adit community team": "Reinindra Adhitya",
+    "alex r": "Roach Alex Scott",
+    "alex roach": "Roach Alex Scott",
     "alex": "Algar Sinclair Alexander John",
+    "alifia": "Hazisyah Alifia Nur",
+    "amir": "Ghazi Amir Hassan",
+    "amir": "Quezada Amir Benveniste",
+    "ana": "Tinggogoy Anna Maria",
+    "anggi kk": "Ansyahputri Anggita Rizkiarachma",
     "anggi": "Ansyahputri Anggita Rizkiarachma",
     "anggita": "Ansyahputri Anggita Rizkiarachma",
-    "shafira": "Ayuningtyas Shafira",
-    "rahul": "Azhar Rahul Finaya",
-    "imelda": "Basuki Imelda",
-    "ryan b": "Blasczyk Ryan",
-    "ryan": "Blasczyk Ryan",
+    "ani": "Cahyani Ani Rahma",
+    "anna": "Tinggogoy Anna Maria",
+    "anthony": "Layton Anthony Thomas",
+    "aurora": "Rifani Aurora Nurhidayah",
+    "brian": "Johanson Brian",
+    "catherine @pp replacement": "Mordechai Kaleb Arthur",
+    "charge meet up: exploring the science of sugar rush (eka dg)": "Mustikawati Eka",
+    "chris s": "Sutcliffe Christopher",
+    "chris": "Sutcliffe Christopher",
+    "christy": "Waney Natalia Christy",
+    "cindy": "Oktavia Cindy",
+    "comm team": "Community Team",
+    "community team": "Community Team",
+    "connor": "Lee Platel Connor",
+    "covered by adit": "Fairuz Muhammad",
+    "daniel (stative verb)": "Bradshaw Daniel",
     "daniel": "Bradshaw Daniel",
-    "fairuz": "Fairuz Muhammad",
-    "jason": "Gereau Jason Jarett",
-    "risma": "Handayani Khaerunisyah Risma",
-    "vivi": "Hazisyah Alifia Nur",
-    "alifia": "Hazisyah Alifia Nur",
-    "tri bekti": "Hundoyo Tri Bekti",
-    "tri": "Hundoyo Tri Bekti",
-    "madeline": "Jane Quinn Madeline",
-    "jack jones": "Jones Jack William Isaac",
-    "prettya": "Kartikasari Prettya Nur",
     "derek": "Laurendeau Derek",
-    "john lawrence": "Lawrence Moore John",
-    "john": "Lawrence Moore John",
-    "john moore": "Lawrence Moore John",
-    "medi": "Medianti Annisa",
+    "dimas indra": "Pratama Dimas Indra",
+    "dimas kk": "Pratama Dimas Indra",
+    "dimas": "Pratama Dimas Indra",
+    "edy junaedi @pp": "Priscilla Yokhebed",
     "eka": "Mustikawati Eka",
+    "fairuz": "Fairuz Muhammad",
+    "farida go member (uzli)": "Ainiyah Uzlifatul",
+    "firda comm team": "Fadhilah Firdausa",
+    "firda community team": "Fadhilah Firdausa",
+    "firda": "Fadhilah Firdausa",
+    "fita": "Saputri Okfitasari Hana",
+    "garce": "Melody Grace",
+    "gitasya": "Murti Gitasya",
+    "grace pkw": "Melody Grace",
+    "grace": "Melody Grace",
+    "hary @pp imelda": "Basuki Imelda",
+    "imel": "Basuki Imelda",
+    "imelda": "Basuki Imelda",
+    "indra bestari @gc": "Reinindra Adhitya",
+    "jack elfrink": "Francis Elfrink Jack",
+    "jack jonees": "Jones Jack William Isaac",
+    "jack jones": "Jones Jack William Isaac",
+    "jack": "Jones Jack William Isaac",
+    "james": "Bushey James Michael",
+    "jason": "Gereau Jason Jarett",
+    "john lawrence": "Lawrence Moore John",
+    "john moore": "Lawrence Moore John",
+    "john": "Lawrence Moore John",
+    "jurado": "Jurado Michael John",
+    "kaleb": "Mordechai Kaleb Arthur",  
+    "kenny kk": "Prasheena Kainaz",
+    "kenny": "Prasheena Kainaz",
+    "lulu @dg": "Mustikawati Eka",
+    "madeline": "Jane Quinn Madeline",
+    "medi (smb)": "Medianti Annisa",
+    "medi": "Medianti Annisa",
     "nadya": "Nasarah Nadya",
-    "ruth olivia": "Pakpahan Ruth Olivia Angelina",
-    "olivia": "Pakpahan Ruth Olivia Angelina",
+    "nana": "Hamsah Handayani Ratnasari", 
+    "nita @ gc replacement": "Fairuz Muhammad",
+    "nova": "Rahmadya Nova Ayu",
+    "okfita": "Saputri Okfitasari Hana",
+    "okftita": "Saputri Okfitasari Hana",
     "oliv": "Pakpahan Ruth Olivia Angelina",
     "olive": "Pakpahan Ruth Olivia Angelina",
-    "toby": "Phillips Toby",
+    "olivia": "Pakpahan Ruth Olivia Angelina",
+    "online social hour: fixing problems (ade)": "Setiadi Sapto",
+    "online social hour: fixing problems (daniel)": "Bradshaw Daniel",
+    "peter": "Mowatt Peter Denis",
+    "pre int, online (toby)": "Phillips Toby",
+    "prettya pkw": "Kartikasari Prettya Nur",
+    "prettya": "Kartikasari Prettya Nur",
+    "priscil": "Priscilla Yokhebed",
+    "priscill (sdc)": "Priscilla Yokhebed",
     "priscill": "Priscilla Yokhebed",
     "priscilla": "Priscilla Yokhebed",
-    "priscil": "Priscilla Yokhebed",
-    "nova": "Rahmadya Nova Ayu",
-    "aurora": "Rifani Aurora Nurhidayah",
-    "rifani": "Rifani Aurora Nurhidayah",
-    "roger": "Szlatiner Roger Bernad",
-    "ade": "Setiadi Sapto",
-    "anna": "Tinggogoy Anna Maria",
-    "ana": "Tinggogoy Anna Maria",
-    # added in july 2023
-    # elsa forget to put - in description
-    "amir": "Ghazi Amir Hassan",
-    "chris s": "Sutcliffe Christopher",
-    "under online trainer 6 (62.jak05.o6)": "Bradshaw Daniel",
-    "vpg online: feminism (roger)": "Szlatiner Roger Bernad",
-    "farida go member (uzli)": "Ainiyah Uzlifatul",
-    "vpg online: being tactful (jason)": "Gereau Jason Jarett",
-    "chris": "Sutcliffe Christopher",
-    "nan": "Blank",
-    np.nan: "Blank",
-    'up "fame and fortune" (priscill)': "Priscilla Yokhebed",
-    "anggi kk": "Ansyahputri Anggita Rizkiarachma",
-    "dimas kk": "Pratama Dimas Indra",
-    "prettya pkw": "Kartikasari Prettya Nur",
-    "priscill (sdc)": "Priscilla Yokhebed",
-    "medi (smb)": "Medianti Annisa",
-    "uzli pp": "Ainiyah Uzlifatul",
-    "jurado": "Jurado Michael John",
-    "online social hour: fixing problems (ade)": "Setiadi Sapto",
-    "charge meet up: exploring the science of sugar rush (eka dg)": "Mustikawati Eka",
-    "online social hour: fixing problems (daniel)": "Bradshaw Daniel",
-    "ade sapto": "Setiadi Sapto",
-    "daniel (stative verb)": "Bradshaw Daniel",
-    "edy junaedi @pp": "Priscilla Yokhebed",
-    "adhit": "Reinindra Adhitya",
-    "brian": "Johanson Brian",
-    "firda": "Fadhilah Firdausa",
-    "ratna": "Hamsah Handayani Ratnasari",  # Jul PP, after that SDC
-    "ratna (nana)": "Hamsah Handayani Ratnasari",  # Jul PP, after that SDC
-    "nana": "Hamsah Handayani Ratnasari",  # Jul PP, after that SDC
-    "kaleb": "Mordechai Kaleb Arthur",  # PP
-    "imel": "Basuki Imelda",
-    "hary @pp imelda": "Basuki Imelda",
-    "jack elfrink": "Francis Elfrink Jack",
-    "jack": "Jones Jack William Isaac",
-    # added in aug 2023
-    "grace": "Melody Grace",
-    "grace pkw": "Melody Grace",
-    "dimas": "Pratama Dimas Indra",
-    "ratna sdc": "Hamsah Handayani Ratnasari",
-    "dimas indra": "Pratama Dimas Indra",
-    "kenny": "Prasheena Kainaz",
-    "pre int, online (toby)": "Phillips Toby",
-    "james": "Bushey James Michael",
-    "indra bestari @gc": "Reinindra Adhitya",
-    "covered by adit": "Fairuz Muhammad",
-    # added in sep 2023
-    "abi @pp replacement": "Gereau Jason Jarett",
-    "kenny kk": "Prasheena Kainaz",
-    "firda community team": "Fadhilah Firdausa",
-    "firda comm team": "Fadhilah Firdausa",
-    "tasya pkw": "Murti Gitasya",
-    "adit community team": "Reinindra Adhitya",
-    "adit comm team": "Reinindra Adhitya",
-    "tasya": "Murti Gitasya",
-    "tribekti": "Hundoyo Tri Bekti",
-    "catherine @pp replacement": "Mordechai Kaleb Arthur",
-    "titin @pp replacement": "Mordechai Kaleb Arthur",
-    "ani": "Cahyani Ani Rahma",
-    "cindy": "Oktavia Cindy",
-    # added in dec 2023
-    "community team": "Community Team",
-    "christy": "Waney Natalia Christy",
-    "connor": "Lee Platel Connor",
-    "fita": "Saputri Okfitasari Hana",
-    "jack jonees": "Jones Jack William Isaac",
-    "rozak": "Rozak Abdul Rahman",
     "putri": "Khalisa Fairuz Putri",
-    # added in jan 2024
-    "okfita": "Saputri Okfitasari Hana",
-    "gitasya": "Murti Gitasya",
-    "peter": "Mowatt Peter Denis",
-    # added in feb 2024
-    "comm team": "Community Team",
-    "garce": "Melody Grace",
-    "nita @ gc replacement": "Fairuz Muhammad",
-    # added in mar 2024
-    "lulu @dg": "Mustikawati Eka",
-    "alex r": "Roach Alex Scott",
+    "rahul": "Azhar Rahul Finaya",
+    "ratna (nana)": "Hamsah Handayani Ratnasari",  
+    "ratna sdc": "Hamsah Handayani Ratnasari",
+    "ratna": "Hamsah Handayani Ratnasari",  
+    "rifani": "Rifani Aurora Nurhidayah",
+    "risma": "Handayani Khaerunisyah Risma",
+    "roger": "Szlatiner Roger Bernad",
+    "rozak": "Rozak Abdul Rahman",
+    "ruth olivia": "Pakpahan Ruth Olivia Angelina",
+    "ryan b": "Blasczyk Ryan",
+    "ryan": "Blasczyk Ryan",
+    "shafira": "Ayuningtyas Shafira",
+    "tasya pkw": "Murti Gitasya",
+    "tasya": "Murti Gitasya",
+    "titin @pp replacement": "Mordechai Kaleb Arthur",
+    "toby": "Phillips Toby",
+    "tri bekti": "Hundoyo Tri Bekti",
+    "tri": "Hundoyo Tri Bekti",
+    "tribekti": "Hundoyo Tri Bekti",
+    "under online trainer 6 (62.jak05.o6)": "Bradshaw Daniel",
+    "uzli pp": "Ainiyah Uzlifatul",
+    "uzli": "Ainiyah Uzlifatul",
+    "vivi": "Hazisyah Alifia Nur",
+    "vpg online: being tactful (jason)": "Gereau Jason Jarett",
+    "vpg online: feminism (roger)": "Szlatiner Roger Bernad",
 }
 
 
@@ -748,8 +765,8 @@ def clean_shared_account_et(df: pd.DataFrame):
     """
 
     contains_online = df["teacher"].str.lower().str.contains("online")
+    lower_than_eq_20 = df["teacher"].str.extract("(\d+)")[0].astype(float) <= 20  # non-ooolab
     more_than_20 = df["teacher"].str.extract("(\d+)")[0].astype(float) > 20  # ooolab
-    lower_than_eq_20 = df["teacher"].str.extract("(\d+)")[0].astype(float) <= 20
 
     conditions = [
         (contains_online & lower_than_eq_20),
@@ -765,3 +782,39 @@ def clean_shared_account_et(df: pd.DataFrame):
         ),
     ]
     return np.select(conditions, choices, default=df["teacher"])
+
+
+# this is the class grouping that is used to group class in manag report
+# as per pak kish request on June 2023 exp meeting
+class_grouping = {
+    "Online VPG": "VIP",
+    "VPG": "VIP",
+    "Online One-on-one": "VIP",
+    "One-on-one": "VIP",
+    "Online Complementary": "Standard",
+    "Chat Hour": "Standard",
+    "Online Social Club": "Standard",
+    "Complementary": "Standard",
+    "Community": "Standard",
+    "Social Club": "Standard",
+    "Online Community": "Standard",
+    "Online Encounter": "Standard",
+    "Social Club Outside": "Standard",
+    "Online Welcome": "Standard",
+    "First Lesson": "Standard",
+    "Advising Session": "Standard",
+    "Online Advising Session": "Standard",
+    "Online First Lesson": "Standard",
+    "Member's Party": "Standard",
+    "Online Other": "Other",
+    "Other": "Other",
+    "Online Proskill": "Other",
+    "Online Proskill First Lesson": "Other",
+    "IELTS": "Other",
+    "Online IELTS First Lesson": "Other",
+    "Proskill": "Other",
+    "Online IELTS": "Other",
+    "IELTS First Lesson": "Other",
+    "Proskill First Lesson": "Other",
+    "Mock Test": "Other",
+}

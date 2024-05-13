@@ -5,9 +5,9 @@ import os
 
 load_dotenv()  # load secret env variable for trainer data
 
-path_raw_data = Path("input/2024/2024-03")  # raw attendance data
-month = 3  # specify to obtain current month data only
-df_trainer_sheet_name = "2024-03"  # sheet name in trainer data
+path_raw_data = Path("input/2024/2024-04")  # raw attendance data
+month = 4  # specify to obtain current month data only
+df_trainer_sheet_name = "2024-04"  # sheet name in trainer data
 is_utc = False  # specify if date is in utc (data from ken)
 is_mutiple_files = True  # multiple files or one file
 path_trainer_data = os.getenv("path_trainer_data")  # path for trainer data
@@ -67,18 +67,3 @@ class CenterMap:
                 f"Area {area} is not a valid area. Select one of {set(self.center_area.values())}"
             )
         return set(k for k, v in self.center_area.items() if v == area)
-
-
-# jkt_1 = ["PP", "SDC", "KG"]
-# jkt_2 = ["GC", "LW", "BSD", "TBS"]
-# jkt_3 = ["KK", "CBB", "SMB"]
-# bdg = ["DG"]
-# sby = ["PKW"]
-# centers = jkt_1 + jkt_2 + jkt_3 + bdg + sby
-# map_centers = {
-#     "JKT 1": jkt_1,
-#     "JKT 2": jkt_2,
-#     "JKT 3": jkt_3,
-#     "BDG": bdg,
-#     "SBY": sby,
-# }
