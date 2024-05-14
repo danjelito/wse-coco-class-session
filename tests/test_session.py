@@ -76,3 +76,9 @@ def test_no_enc_in_class_type_grouped(df_session):
     """
     num = df_session.loc[df_session["class_type_grouped"] == "Encounter"].shape[0]
     assert num == 0, "There are encounter in class_type_grouped"
+
+
+def test_class_grouping_is_correct(df_session):
+    """Class grouping should be in ["Standard", "VIP", "Other"]."""
+    diff =  set(df_session["class_grouping"].unique()) - set(["Standard", "VIP", "Other"])
+    assert not diff, f"class_grouping contains unknown columns: {diff}"
