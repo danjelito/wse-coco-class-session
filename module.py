@@ -748,6 +748,13 @@ shared_acc_et_map = {
     "vivi": "Hazisyah Alifia Nur",
     "vpg online: being tactful (jason)": "Gereau Jason Jarett",
     "vpg online: feminism (roger)": "Szlatiner Roger Bernad",
+    'kainaz': "Prasheena Kainaz", 
+    'aelx r': "Roach Alex Scott", 
+    'alex s': "Roach Alex Scott", 
+    'jack j': "Jones Jack William Isaac", 
+    'annna': "Tinggogoy Anna Maria", 
+    'citra @pp': "Hundoyo Tri Bekti", 
+    'abi @pp': "Basuki Imelda", 
 }
 
 
